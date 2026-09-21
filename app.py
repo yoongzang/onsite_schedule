@@ -784,5 +784,7 @@ def handle_set_name(data):
 if __name__ == "__main__":
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"서버 시작: http://localhost:5050")
-    socketio.run(app, host="0.0.0.0", port=5050, debug=True, allow_unsafe_werkzeug=True)
+    port = int(os.environ.get("PORT", 5050))
+    debug = os.environ.get("RENDER") is None
+    print(f"서버 시작: http://localhost:{port}")
+    socketio.run(app, host="0.0.0.0", port=port, debug=debug, allow_unsafe_werkzeug=True)

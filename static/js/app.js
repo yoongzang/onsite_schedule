@@ -23,15 +23,25 @@ const TYPE_COLORS = {
   '제휴': '#949494',
   '라이브': '#D9E0A4',
   '이벤트': '#949494',
+  '홈스타일': '#DBFFEB',
+  '베스트샵': '#949494',
   '기타': '#949494',
 };
 
 // 텍스트가 흰색이어야 하는 유형 (어두운 배경색)
-const LIGHT_TEXT_TYPES = ['임직원', '제휴', '이벤트', '기타'];
+const LIGHT_TEXT_TYPES = ['임직원', '제휴', '이벤트', '베스트샵', '기타'];
 
 function getTextColor(type) {
   if (LIGHT_TEXT_TYPES.includes(type)) return '#FFFFFF';
   return '#333333';
+}
+
+function getEventUrl(eventNo) {
+  if (!eventNo) return '';
+  if (eventNo.startsWith('PE')) {
+    return `https://www.lge.co.kr/benefits/exhibitions/detail-${eventNo}`;
+  }
+  return eventNo;
 }
 
 // 날짜 유틸
@@ -247,7 +257,7 @@ function initEventListeners() {
     const linkEl = document.getElementById('eventLink');
     const anchorEl = document.getElementById('eventLinkAnchor');
     if (val) {
-      const fullUrl = `https://www.lge.co.kr/benefits/exhibitions/detail-${val}`;
+      const fullUrl = getEventUrl(val);
       linkEl.style.display = 'block';
       anchorEl.href = fullUrl;
       anchorEl.textContent = fullUrl;
@@ -681,7 +691,7 @@ function openCampaignModal(campaign = null) {
   const linkEl = document.getElementById('eventLink');
   const anchorEl = document.getElementById('eventLinkAnchor');
   if (eventVal) {
-    const fullUrl = `https://www.lge.co.kr/benefits/exhibitions/detail-${eventVal}`;
+    const fullUrl = getEventUrl(eventVal);
     linkEl.style.display = 'block';
     anchorEl.href = fullUrl;
     anchorEl.textContent = fullUrl;
@@ -779,7 +789,7 @@ function showScheduleDetail(scheduleId) {
   document.getElementById('detailJira').innerHTML = campaign.jira
     ? `<a href="${jiraUrl}" target="_blank">ONMKT-${campaign.jira}</a>`
     : '-';
-  const eventUrl = campaign.eventNo ? `https://www.lge.co.kr/benefits/exhibitions/detail-${campaign.eventNo}` : '';
+  const eventUrl = campaign.eventNo ? getEventUrl(campaign.eventNo) : '';
   document.getElementById('detailEventNo').innerHTML = campaign.eventNo
     ? `<a href="${eventUrl}" target="_blank">${eventUrl}</a>`
     : '-';

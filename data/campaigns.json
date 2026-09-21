@@ -1,42 +1,5 @@
 [
   {
-    "id": "camp_sample1",
-    "name": "가을 가전 대전",
-    "type": "통합",
-    "category": "신규",
-    "jira": "1530",
-    "period": {
-      "start": "2026-09-15",
-      "end": "2026-09-30"
-    },
-    "memo": "시즌 메인 행사",
-    "eventNo": "PE00897002"
-  },
-  {
-    "id": "camp_sample2",
-    "name": "TV 특가전",
-    "type": "전략런칭",
-    "category": "신규",
-    "jira": "1542",
-    "period": {
-      "start": "2026-09-18",
-      "end": "2026-09-25"
-    },
-    "memo": ""
-  },
-  {
-    "id": "camp_sample3",
-    "name": "냉장고 할인",
-    "type": "일반",
-    "category": "연장",
-    "jira": "1528",
-    "period": {
-      "start": "2026-09-20",
-      "end": "2026-09-28"
-    },
-    "memo": "협력사 공동 진행"
-  },
-  {
     "id": "camp_8e92dd29",
     "name": "냉장고",
     "type": "임직원",
@@ -49,26 +12,378 @@
     "memo": "ㄴㅇㄹ"
   },
   {
-    "id": "camp_2f7a6687",
-    "name": "주말구독특가 (9월21일주차)",
-    "type": "구독",
-    "category": "파생",
+    "category": "신규",
+    "eventNo": "PE01001005",
     "jira": "",
+    "memo": "메모 입력",
+    "name": "9월 엘지닷",
     "period": {
-      "start": "2026-09-25",
-      "end": "2026-09-28"
+      "end": "2026-09-17",
+      "start": "2026-09-15"
     },
-    "memo": ""
+    "type": "통합",
+    "id": "camp_468817a9"
   },
   {
-    "id": "camp_af3cbad0",
-    "name": "9.21 홈스타일",
-    "type": "라이브",
+    "category": "신규",
+    "eventNo": "PE00992003",
+    "jira": "",
+    "memo": "",
+    "name": "9월 구독도 엘지닷",
+    "period": {
+      "end": "2026-09-27",
+      "start": "2026-09-01"
+    },
+    "type": "통합",
+    "id": "camp_63faa927"
+  },
+  {
+    "category": "신규",
+    "eventNo": "https://bestshop.lge.co.kr/event/detail/EV11075006?inflow=lgekor&utm_medium=banner&utm_source=lgecom&utm_campaign=20260825_EV11075006",
+    "jira": "",
+    "memo": "",
+    "name": "9월 New 라이프 페스타",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "베스트샵",
+    "id": "camp_c71d2fe2"
+  },
+  {
+    "category": "신규",
+    "eventNo": "/benefits/affiliate-channel",
+    "jira": "",
+    "memo": "",
+    "name": "마음껏 골라쓰는 제휴 혜택",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-10-31"
+    },
+    "type": "제휴",
+    "id": "camp_1292ba6e"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00958003",
+    "jira": "",
+    "memo": "",
+    "name": "LG 디오스 Fit & Max 드로어 냉장고 런칭",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "전략런칭",
+    "id": "camp_2a52eaf2"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00996009",
+    "jira": "",
+    "memo": "",
+    "name": "LG 퓨리케어 바스에어시스템",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_16fbf212"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00923012",
+    "jira": "",
+    "memo": "",
+    "name": "LG 모니터 통합 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_e3385191"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00996010",
+    "jira": "",
+    "memo": "",
+    "name": "나를 위한 힐링 LG 힐링미 안마의자",
+    "period": {
+      "end": "2026-09-30",
+      "start": "2026-09-01"
+    },
+    "type": "",
+    "id": "camp_838fdf9c"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00996011",
+    "jira": "",
+    "memo": "",
+    "name": "LG 시스템 아이어닝 런칭",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_0f168a63"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00996012",
+    "jira": "",
+    "memo": "",
+    "name": "LG 코드제로 오브제컬렉션 A7 Core 런칭",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_cd9a9714"
+  },
+  {
+    "category": "리뉴얼",
+    "eventNo": "PE00996013",
+    "jira": "",
+    "memo": "",
+    "name": "LG 트롬 AI 오브제컬렉션 워시콤보 론칭 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "전략런칭",
+    "id": "camp_c2ae89a2"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00996014",
+    "jira": "",
+    "memo": "",
+    "name": "LG 스타일러 스팀 모델 단독 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_f9594ff0"
+  },
+  {
+    "category": "리뉴얼",
+    "eventNo": "PE00968003",
+    "jira": "",
+    "memo": "",
+    "name": "엑스붐 시리즈 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_b87624a8"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00996019",
+    "jira": "",
+    "memo": "",
+    "name": "RONi 출시 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "전략런칭",
+    "id": "camp_e45fd227"
+  },
+  {
+    "category": "리뉴얼",
+    "eventNo": "PE00979001",
+    "jira": "",
+    "memo": "",
+    "name": "남다르게 냉장고(신선페스타)",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "전략런칭",
+    "id": "camp_04978e1f"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00984001",
+    "jira": "",
+    "memo": "",
+    "name": "세계 최초 1000KHz 게이밍 모니터 런칭 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_2ff70609"
+  },
+  {
+    "category": "리뉴얼",
+    "eventNo": "PE00998002",
+    "jira": "",
+    "memo": "",
+    "name": "늦더위 안심처방 휘센 에어컨 기획전",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_bac52f03"
+  },
+  {
+    "category": "리뉴얼",
+    "eventNo": "PE01000001",
+    "jira": "",
+    "memo": "",
+    "name": "가을 맞이 주방 리프레시 프로젝트",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "일반",
+    "id": "camp_95731280"
+  },
+  {
+    "category": "신규",
+    "eventNo": "PE01000002",
+    "jira": "",
+    "memo": "",
+    "name": "클린업 청소기 세일",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "전략런칭",
+    "id": "camp_d89caeb4"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00990001",
+    "jira": "",
+    "memo": "",
+    "name": "Back To School, 그램 신학기 페스티벌",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_b4940b10"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00725003",
+    "jira": "",
+    "memo": "",
+    "name": "최대 5만원 지원! 그램 중고보상",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "일반",
+    "id": "camp_48eb759d"
+  },
+  {
+    "category": "신규",
+    "eventNo": "PE00910005",
+    "jira": "",
+    "memo": "",
+    "name": "8인용 식기세척기 사전예약 기획전",
+    "period": {
+      "end": "2026-09-30",
+      "start": "2026-09-01"
+    },
+    "type": "",
+    "id": "camp_57e7b7f9"
+  },
+  {
+    "category": "연장",
+    "eventNo": "PE00980007",
+    "jira": "",
+    "memo": "",
+    "name": "THE NEXT SCREEN",
+    "period": {
+      "start": "2026-09-01",
+      "end": "2026-09-30"
+    },
+    "type": "전략런칭",
+    "id": "camp_e8a9baa5"
+  },
+  {
+    "category": "리뉴얼",
+    "eventNo": "PE00897002",
+    "jira": "",
+    "memo": "",
+    "name": "남다르게 세탁기(LG 트롬 추석 국민 감사제)",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "전략런칭",
+    "id": "camp_33870062"
+  },
+  {
+    "category": "신규",
+    "eventNo": "PE01011010",
+    "jira": "",
+    "memo": "",
+    "name": "남다르게 본편",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "통합",
+    "id": "camp_95a480f6"
+  },
+  {
+    "category": "신규",
+    "eventNo": "PE01011011",
+    "jira": "",
+    "memo": "",
+    "name": "남다르게 구독",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "구독",
+    "id": "camp_01227eaa"
+  },
+  {
+    "category": "신규",
+    "eventNo": "https://homestyle.lge.co.kr/exhibition/detail?exhibitionId=2609001733",
+    "jira": "",
+    "memo": "",
+    "name": "남다르게 홈스타일",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "홈스타일",
+    "id": "camp_94789730"
+  },
+  {
+    "category": "신규",
+    "eventNo": "/story/home-curation/welcome-to-fine-living-platform",
+    "jira": "",
+    "memo": "",
+    "name": "남다르게 브랜드관",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-10-18"
+    },
+    "type": "홈스타일",
+    "id": "camp_202d1f4f"
+  },
+  {
+    "id": "camp_117f9225",
+    "name": "남다르게 정수기 구독",
+    "type": "구독",
     "category": "신규",
     "jira": "",
     "period": {
-      "start": "2026-09-21",
-      "end": "2026-09-22"
+      "start": "2026-09-18",
+      "end": "2026-10-18"
     },
     "memo": ""
   }

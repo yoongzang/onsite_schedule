@@ -2,6 +2,7 @@
   {
     "code": "HSAD001",
     "active": true,
-    "issuedAt": "2026-09-15T21:41:52.782627"
+    "issuedAt": "2026-09-15T21:41:52.782627",
+    "nickname": "테스트"
   }
 ]
