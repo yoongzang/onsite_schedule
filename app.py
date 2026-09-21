@@ -111,7 +111,13 @@ def get_schedule():
                 "campaignId": row["campaign_id"],
                 "slotId": row["slot_id"],
                 "start": row["start_date"],
-                "end": row["end_date"]
+                "end": row["end_date"],
+                "order": row.get("sort_order", 1),
+                "modified": row.get("modified", False),
+                "modifiedBy": row.get("modified_by"),
+                "modifiedAt": row.get("modified_at"),
+                "confirmedBy": row.get("confirmed_by"),
+                "confirmedAt": row.get("confirmed_at")
             })
         return schedule
     except Exception as e:
@@ -126,7 +132,13 @@ def save_schedule_item(item):
             "campaign_id": item.get("campaignId"),
             "slot_id": item.get("slotId"),
             "start_date": item.get("start"),
-            "end_date": item.get("end")
+            "end_date": item.get("end"),
+            "sort_order": item.get("order", 1),
+            "modified": item.get("modified", False),
+            "modified_by": item.get("modifiedBy"),
+            "modified_at": item.get("modifiedAt"),
+            "confirmed_by": item.get("confirmedBy"),
+            "confirmed_at": item.get("confirmedAt")
         }).execute()
     except Exception as e:
         print(f"DB Error (save_schedule_item): {e}")
@@ -438,6 +450,10 @@ def api_schedule_create():
         "slotId": data.get("slotId"),
         "start": data.get("start"),
         "end": data.get("end"),
+        "order": data.get("order", 1),
+        "modified": True,
+        "modifiedBy": code,
+        "modifiedAt": datetime.now().isoformat(),
     }
     save_schedule_item(new_item)
     log_access(code, "SCHEDULE_CREATE", f"id={new_item['id']}")
@@ -456,6 +472,10 @@ def api_schedule_update(item_id):
         "slotId": data.get("slotId"),
         "start": data.get("start"),
         "end": data.get("end"),
+        "order": data.get("order", 1),
+        "modified": True,
+        "modifiedBy": code,
+        "modifiedAt": datetime.now().isoformat(),
     }
     save_schedule_item(updated_item)
     log_access(code, "SCHEDULE_UPDATE", f"id={item_id}")
@@ -476,8 +496,16 @@ def api_schedule_delete(item_id):
 
 @app.route("/api/schedule/<item_id>/confirm", methods=["POST"])
 def api_schedule_confirm(item_id):
-    """수정 확인"""
+    """수정 확인 - modified 플래그 해제"""
     code = session.get("access_code", "unknown")
+    schedule = get_schedule()
+    for s in schedule:
+        if s["id"] == item_id:
+            s["modified"] = False
+            s["confirmedBy"] = code
+            s["confirmedAt"] = datetime.now().isoformat()
+            save_schedule_item(s)
+            break
     log_access(code, "SCHEDULE_CONFIRM", f"id={item_id}")
     schedule = get_schedule()
     socketio.emit("schedule:update", {"schedule": schedule})
