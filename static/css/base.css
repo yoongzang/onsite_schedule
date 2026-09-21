@@ -891,6 +891,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  .header-logo {
+    height: 22px;
+  }
+
   .header-title {
     font-size: 13px;
   }
