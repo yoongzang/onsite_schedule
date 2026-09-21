@@ -466,13 +466,25 @@ def api_schedule_create():
 def api_schedule_update(item_id):
     data = request.get_json()
     code = session.get("access_code", "unknown")
+
+    # 기존 데이터 가져오기
+    existing = None
+    for s in get_schedule():
+        if s["id"] == item_id:
+            existing = s
+            break
+
+    if not existing:
+        return jsonify({"error": "스케줄을 찾을 수 없습니다."}), 404
+
+    # 기존 데이터에 새 데이터 병합
     updated_item = {
         "id": item_id,
-        "campaignId": data.get("campaignId"),
-        "slotId": data.get("slotId"),
-        "start": data.get("start"),
-        "end": data.get("end"),
-        "order": data.get("order", 1),
+        "campaignId": data.get("campaignId") or existing.get("campaignId"),
+        "slotId": data.get("slotId") or existing.get("slotId"),
+        "start": data.get("start") or existing.get("start"),
+        "end": data.get("end") or existing.get("end"),
+        "order": data.get("order") or existing.get("order", 1),
         "modified": True,
         "modifiedBy": code,
         "modifiedAt": datetime.now().isoformat(),
