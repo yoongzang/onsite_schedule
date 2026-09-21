@@ -334,12 +334,20 @@ function renderCampaigns(searchTerm = '') {
 
   // 운영 기획전
   if (activeCampaigns.length > 0) {
-    html += `<div class="campaign-section">
+    const sortedActive = sortActiveCampaigns(activeCampaigns);
+    const currentSort = getActiveSortValue();
+    html += `<div class="campaign-section active-campaigns">
       <div class="campaign-section-header" onclick="toggleCampaignSection(this)">
         <span class="section-toggle">▼</span> 운영 기획전 (${activeCampaigns.length})
       </div>
       <div class="campaign-section-body">
-        ${activeCampaigns.map(c => renderCampaignCard(c)).join('')}
+        <div class="active-sort">
+          <select id="activeSortSelect" onchange="onActiveSortChange()">
+            <option value="name" ${currentSort === 'name' ? 'selected' : ''}>ㄱㄴㄷ순</option>
+            <option value="start" ${currentSort === 'start' ? 'selected' : ''}>시작일순</option>
+          </select>
+        </div>
+        ${sortedActive.map(c => renderCampaignCard(c)).join('')}
       </div>
     </div>`;
   }
@@ -399,8 +407,8 @@ function renderCampaignCard(c, isEnded = false) {
         </div>
       </div>
       <div class="campaign-actions">
-        <button type="button" onclick="editCampaign('${c.id}')">수정</button>
-        <button type="button" onclick="deleteCampaign('${c.id}')">삭제</button>
+        <button type="button" onclick="editCampaign('${c.id}')" title="수정">✎</button>
+        <button type="button" onclick="deleteCampaign('${c.id}')" title="삭제">×</button>
       </div>
     </div>
   `;
@@ -408,6 +416,31 @@ function renderCampaignCard(c, isEnded = false) {
 
 function toggleCampaignSection(header) {
   header.closest('.campaign-section').classList.toggle('collapsed');
+}
+
+// 운영 기획전 정렬
+let activeSortValue = 'name';
+
+function getActiveSortValue() {
+  return activeSortValue;
+}
+
+function sortActiveCampaigns(campaigns) {
+  const sorted = [...campaigns];
+  if (activeSortValue === 'name') {
+    sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ko'));
+  } else if (activeSortValue === 'start') {
+    sorted.sort((a, b) => (a.period?.start || '').localeCompare(b.period?.start || ''));
+  }
+  return sorted;
+}
+
+function onActiveSortChange() {
+  const sel = document.getElementById('activeSortSelect');
+  if (sel) {
+    activeSortValue = sel.value;
+    renderCampaigns(document.getElementById('campaignSearch').value);
+  }
 }
 
 // 종료 기획전 필터

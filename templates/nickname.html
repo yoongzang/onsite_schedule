@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>닉네임 설정</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #16C476;
+      --primary-dark: #12a862;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --danger: #ef4444;
+      --radius: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+
+    .card-inner {
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 16px;
+      color: var(--text);
+      text-align: center;
+      letter-spacing: 1px;
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22, 196, 118, 0.1);
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .hint {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-inner">
+      <h1 class="title">닉네임 설정</h1>
+      <p class="subtitle">다른 사용자에게 표시될 이름을 설정해주세요</p>
+
+      <form id="nicknameForm">
+        <div class="form-group">
+          <label for="nickname">닉네임 (최대 5자)</label>
+          <input type="text" id="nickname" maxlength="5" placeholder="예: 홍길동" autocomplete="off">
+          <div class="char-count"><span id="charCount">0</span>/5</div>
+        </div>
+        <button type="submit" class="btn-submit" id="submitBtn" disabled>설정 완료</button>
+      </form>
+      <div id="message"></div>
+      <p class="hint">메모 작성 시 접근코드와 함께 닉네임이 표시됩니다.</p>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('nickname');
+    const charCount = document.getElementById('charCount');
+    const submitBtn = document.getElementById('submitBtn');
+
+    input.addEventListener('input', () => {
+      const len = input.value.length;
+      charCount.textContent = len;
+      submitBtn.disabled = len === 0 || len > 5;
+    });
+
+    document.getElementById('nicknameForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nickname = input.value.trim();
+      const msgEl = document.getElementById('message');
+
+      if (!nickname || nickname.length > 5) {
+        msgEl.innerHTML = '<div class="message error">닉네임은 1~5자로 입력해주세요.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/nickname', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nickname }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          window.location.href = data.redirect;
+        } else {
+          msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
+        }
+      } catch (e) {
+        msgEl.innerHTML = '<div class="message error">서버 오류가 발생했습니다.</div>';
+      }
+    });
+
+    input.focus();
+  </script>
+</body>
+</html>

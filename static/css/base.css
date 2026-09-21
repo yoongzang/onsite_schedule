@@ -70,6 +70,18 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  height: 28px;
+  width: auto;
+  margin-top: 6px;
+}
+
 .header-title {
   margin: 0;
   font-size: 18px;
@@ -271,10 +283,10 @@ body {
 }
 
 .campaign-actions button {
-  padding: 4px 8px;
-  font-size: 11px;
+  padding: 2px 5px;
+  font-size: 10px;
   border: none;
-  border-radius: 4px;
+  border-radius: 3px;
   background: var(--surface-2);
   color: var(--text-secondary);
   cursor: pointer;
@@ -305,6 +317,10 @@ body {
   background: var(--border);
 }
 
+.active-campaigns .campaign-section-header {
+  color: #21291F;
+}
+
 .section-toggle {
   display: inline-block;
   transition: transform 0.2s;
@@ -327,6 +343,22 @@ body {
 .campaign-card.ended {
   opacity: 0.6;
   cursor: default;
+}
+
+.active-sort {
+  padding: 6px 0;
+  margin-bottom: 6px;
+}
+
+.active-sort select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
 }
 
 .ended-filter {

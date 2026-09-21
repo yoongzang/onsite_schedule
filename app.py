@@ -81,19 +81,19 @@ def save_access_codes(data):
     write_json("access_codes.json", data)
 
 
-def generate_next_code():
-    """HSAD001~999 순차 발급"""
+def generate_next_code(prefix="HSAD"):
+    """HSAD001~999 또는 LG001~999 순차 발급"""
     codes = get_access_codes()
     if not codes:
         next_num = 1
     else:
-        nums = [int(c["code"].replace("HSAD", "")) for c in codes if c["code"].startswith("HSAD")]
+        nums = [int(c["code"].replace(prefix, "")) for c in codes if c["code"].startswith(prefix)]
         next_num = max(nums) + 1 if nums else 1
 
     if next_num > 999:
         return None  # 코드 소진
 
-    return f"HSAD{next_num:03d}"
+    return f"{prefix}{next_num:03d}"
 
 
 def is_valid_code(code):
@@ -126,10 +126,64 @@ def app_page():
     code = session.get("access_code")
     if not code or not is_valid_code(code):
         return redirect(url_for("index"))
+    # 닉네임 없으면 닉네임 설정으로
+    code_info = get_code_info(code)
+    if not code_info or not code_info.get("nickname"):
+        return redirect(url_for("nickname_page"))
     return render_template("index.html")
 
 
+@app.route("/nickname")
+def nickname_page():
+    """닉네임 설정 페이지"""
+    code = session.get("access_code")
+    if not code or not is_valid_code(code):
+        return redirect(url_for("index"))
+    return render_template("nickname.html")
+
+
+@app.route("/api/auth/nickname", methods=["POST"])
+def api_set_nickname():
+    """닉네임 설정"""
+    code = session.get("access_code")
+    if not code:
+        return jsonify({"ok": False, "error": "로그인이 필요합니다."}), 401
+
+    data = request.get_json()
+    nickname = data.get("nickname", "").strip()
+
+    if not nickname or len(nickname) > 5:
+        return jsonify({"ok": False, "error": "닉네임은 1~5자로 입력해주세요."}), 400
+
+    codes = get_access_codes()
+    for c in codes:
+        if c["code"] == code:
+            c["nickname"] = nickname
+            break
+    save_access_codes(codes)
+    log_access(code, "NICKNAME_SET", nickname)
+
+    return jsonify({"ok": True, "redirect": "/app"})
+
+
+def get_display_name(code):
+    """코드+닉네임 형태로 표시명 반환"""
+    code_info = get_code_info(code)
+    if code_info and code_info.get("nickname"):
+        return f"{code}({code_info['nickname']})"
+    return code
+
+
 # ---- 접근 코드 API ----
+
+def get_code_info(code):
+    """코드 정보 가져오기"""
+    codes = get_access_codes()
+    for c in codes:
+        if c["code"] == code:
+            return c
+    return None
+
 
 @app.route("/api/auth/login", methods=["POST"])
 def api_auth_login():
@@ -142,6 +196,13 @@ def api_auth_login():
         return jsonify({"ok": False, "error": "유효하지 않은 접근 코드입니다."}), 401
 
     session["access_code"] = code
+    code_info = get_code_info(code)
+
+    # 닉네임이 없으면 닉네임 설정 페이지로
+    if not code_info or not code_info.get("nickname"):
+        log_access(code, "LOGIN_SUCCESS", "needs nickname")
+        return jsonify({"ok": True, "redirect": "/nickname"})
+
     log_access(code, "LOGIN_SUCCESS")
     return jsonify({"ok": True, "redirect": "/app"})
 
@@ -151,23 +212,28 @@ def api_auth_issue():
     """접근 코드 발급 (관리자 패스워드 필요)"""
     data = request.get_json()
     password = data.get("password", "")
+    prefix = data.get("prefix", "HSAD")
+
+    if prefix not in ["HSAD", "LG"]:
+        prefix = "HSAD"
 
     if password != ADMIN_PASSWORD:
         log_access("ADMIN", "ISSUE_FAILED", "Wrong password")
         return jsonify({"ok": False, "error": "패스워드가 일치하지 않습니다."}), 401
 
-    new_code = generate_next_code()
+    new_code = generate_next_code(prefix)
     if not new_code:
-        return jsonify({"ok": False, "error": "발급 가능한 코드가 없습니다. (최대 999개)"}), 400
+        return jsonify({"ok": False, "error": f"발급 가능한 {prefix} 코드가 없습니다. (최대 999개)"}), 400
 
     codes = get_access_codes()
     codes.append({
         "code": new_code,
         "active": True,
+        "nickname": None,
         "issuedAt": datetime.now().isoformat(),
     })
     save_access_codes(codes)
-    log_access(new_code, "ISSUED", f"by admin")
+    log_access(new_code, "ISSUED", f"by admin ({prefix})")
 
     return jsonify({"ok": True, "code": new_code})
 
@@ -324,10 +390,12 @@ def api_memos_create():
 
     data = request.json
     code = session.get("access_code", "unknown")
+    display_name = get_display_name(code)
     memo = {
         "id": f"memo_{uuid.uuid4().hex[:8]}",
         "content": data.get("content", ""),
-        "createdBy": code,
+        "createdByCode": code,
+        "createdBy": display_name,
         "createdAt": datetime.now().isoformat(),
         "confirmed": False,
         "confirmedBy": None,
@@ -346,10 +414,12 @@ def api_memos_update(memo_id):
     memos = get_memos()
     data = request.json
     code = session.get("access_code", "unknown")
+    display_name = get_display_name(code)
     for m in memos:
         if m["id"] == memo_id:
             m["content"] = data.get("content", m["content"])
-            m["createdBy"] = code
+            m["createdByCode"] = code
+            m["createdBy"] = display_name
             m["createdAt"] = datetime.now().isoformat()
             m["confirmed"] = False
             m["confirmedBy"] = None
@@ -378,12 +448,13 @@ def api_memos_confirm(memo_id):
     """메모 확인완료"""
     memos = get_memos()
     code = session.get("access_code", "unknown")
+    display_name = get_display_name(code)
     for m in memos:
         if m["id"] == memo_id:
-            if m["createdBy"] == code:
+            if m.get("createdByCode") == code:
                 return jsonify({"error": "본인이 작성한 메모는 본인이 확인할 수 없습니다."}), 400
             m["confirmed"] = True
-            m["confirmedBy"] = code
+            m["confirmedBy"] = display_name
             m["confirmedAt"] = datetime.now().isoformat()
             break
     save_memos(memos)
