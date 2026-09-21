@@ -640,19 +640,32 @@ def _parse_date(val):
 
 @app.route("/api/upload/confirm", methods=["POST"])
 def api_upload_confirm():
-    """미리보기한 기획전들을 실제로 저장"""
+    """미리보기한 기획전들을 실제로 저장 (중복 체크)"""
     data = request.get_json()
     new_campaigns = data.get("campaigns", [])
+    existing = get_campaigns()
+
+    # 기존 기획전 키 세트 (이름 + 시작일 + 종료일)
+    existing_keys = set()
+    for c in existing:
+        key = (c.get("name", ""), c.get("period", {}).get("start", ""), c.get("period", {}).get("end", ""))
+        existing_keys.add(key)
 
     added = 0
+    skipped = 0
     for c in new_campaigns:
+        key = (c.get("name", ""), c.get("period", {}).get("start", ""), c.get("period", {}).get("end", ""))
+        if key in existing_keys:
+            skipped += 1
+            continue
         c["id"] = f"camp_{uuid.uuid4().hex[:8]}"
         save_campaign(c)
+        existing_keys.add(key)
         added += 1
 
     campaigns = get_campaigns()
     socketio.emit("campaigns:update", {"campaigns": campaigns})
-    return jsonify({"added": added})
+    return jsonify({"added": added, "skipped": skipped})
 
 
 @app.route("/api/template")

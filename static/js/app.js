@@ -953,7 +953,11 @@ async function confirmExcelUpload() {
     });
     const data = await res.json();
     closeExcelModal();
-    alert(`${data.added}개 기획전이 추가되었습니다.`);
+    let msg = `${data.added}개 기획전이 추가되었습니다.`;
+    if (data.skipped > 0) {
+      msg += `\n(중복 ${data.skipped}개 제외)`;
+    }
+    alert(msg);
   } catch (e) {
     alert('업로드 중 오류가 발생했습니다.');
     console.error(e);
