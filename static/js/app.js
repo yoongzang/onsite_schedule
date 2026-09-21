@@ -1060,7 +1060,7 @@ async function confirmSchedule() {
   }
 
   try {
-    await fetch('/api/schedule', {
+    const res = await fetch('/api/schedule', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1070,6 +1070,11 @@ async function confirmSchedule() {
         end,
       }),
     });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || '스케줄 추가에 실패했습니다.');
+      return;
+    }
     closeScheduleModal();
   } catch (e) {
     console.error('스케줄 추가 실패:', e);

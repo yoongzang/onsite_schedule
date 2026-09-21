@@ -444,12 +444,27 @@ def api_schedule_list():
 def api_schedule_create():
     data = request.get_json()
     code = session.get("access_code", "unknown")
+    slot_id = data.get("slotId")
+    new_start = data.get("start")
+    new_end = data.get("end")
+
+    # 같은 슬롯에 날짜가 겹치는 스케줄이 있는지 체크
+    schedule = get_schedule()
+    for s in schedule:
+        if s["slotId"] == slot_id:
+            existing_start = s.get("start", "")
+            existing_end = s.get("end", "")
+            # 날짜 겹침 체크: 새 시작 <= 기존 종료 AND 새 종료 >= 기존 시작
+            if existing_start and existing_end and new_start and new_end:
+                if new_start <= existing_end and new_end >= existing_start:
+                    return jsonify({"error": "해당 구좌에 이미 기획전이 배치되어 있습니다."}), 400
+
     new_item = {
         "id": f"sch_{uuid.uuid4().hex[:8]}",
         "campaignId": data.get("campaignId"),
-        "slotId": data.get("slotId"),
-        "start": data.get("start"),
-        "end": data.get("end"),
+        "slotId": slot_id,
+        "start": new_start,
+        "end": new_end,
         "order": data.get("order", 1),
         "modified": True,
         "modifiedBy": code,
