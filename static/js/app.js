@@ -892,6 +892,22 @@ async function confirmScheduleModification() {
   }
 }
 
+async function deleteScheduleItem() {
+  if (!currentDetailScheduleId) return;
+
+  if (!confirm('이 스케줄을 삭제하시겠습니까?')) return;
+
+  try {
+    await fetch(`/api/schedule/${currentDetailScheduleId}`, {
+      method: 'DELETE',
+    });
+    closeDetailModal();
+  } catch (e) {
+    console.error('삭제 실패:', e);
+    alert('삭제에 실패했습니다.');
+  }
+}
+
 // 엑셀 모달
 let pendingExcelData = null;
 
