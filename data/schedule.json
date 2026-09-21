@@ -138,9 +138,11 @@
     "start": "2026-09-21",
     "end": "2026-09-30",
     "order": 1,
-    "modified": true,
+    "modified": false,
     "modifiedBy": "HSAD001",
-    "modifiedAt": "2026-09-21T19:09:21.798467"
+    "modifiedAt": "2026-09-21T19:09:21.798467",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:19:38.393960"
   },
   {
     "id": "sch_55c4ab0a",
@@ -149,9 +151,11 @@
     "start": "2026-09-21",
     "end": "2026-09-30",
     "order": 1,
-    "modified": true,
+    "modified": false,
     "modifiedBy": "HSAD001",
-    "modifiedAt": "2026-09-21T19:09:37.653915"
+    "modifiedAt": "2026-09-21T19:09:37.653915",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:19:36.153344"
   },
   {
     "id": "sch_f6d88cc0",
@@ -160,9 +164,11 @@
     "start": "2026-09-21",
     "end": "2026-09-30",
     "order": 1,
-    "modified": true,
+    "modified": false,
     "modifiedBy": "HSAD001",
-    "modifiedAt": "2026-09-21T19:11:07.809010"
+    "modifiedAt": "2026-09-21T19:11:07.809010",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:19:34.540577"
   },
   {
     "id": "sch_85514f52",
@@ -173,7 +179,9 @@
     "order": 1,
     "modified": true,
     "modifiedBy": "HSAD001",
-    "modifiedAt": "2026-09-21T19:13:11.976059"
+    "modifiedAt": "2026-09-21T19:18:46.915704",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:18:42.164185"
   },
   {
     "id": "sch_2e21a893",
@@ -182,9 +190,11 @@
     "start": "2026-09-21",
     "end": "2026-09-30",
     "order": 1,
-    "modified": true,
+    "modified": false,
     "modifiedBy": "HSAD001",
-    "modifiedAt": "2026-09-21T19:13:19.581481"
+    "modifiedAt": "2026-09-21T19:13:19.581481",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:18:29.728893"
   },
   {
     "id": "sch_14b63a11",
@@ -193,8 +203,75 @@
     "start": "2026-09-21",
     "end": "2026-09-30",
     "order": 1,
-    "modified": true,
+    "modified": false,
     "modifiedBy": "HSAD001",
-    "modifiedAt": "2026-09-21T19:18:02.668795"
+    "modifiedAt": "2026-09-21T19:18:02.668795",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:18:27.729833"
+  },
+  {
+    "id": "sch_4b841f0b",
+    "campaignId": "camp_2a52eaf2",
+    "slotId": "home_hero_11",
+    "start": "2026-09-21",
+    "end": "2026-09-30",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-21T19:18:16.499856",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:18:26.051340"
+  },
+  {
+    "id": "sch_9fa5cb68",
+    "campaignId": "camp_bac52f03",
+    "slotId": "home_hero_12",
+    "start": "2026-09-21",
+    "end": "2026-09-30",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-21T19:18:22.614920",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:18:24.747111"
+  },
+  {
+    "id": "sch_91de5a1a",
+    "campaignId": "camp_25281459",
+    "slotId": "home_hero_13",
+    "start": "2026-09-21",
+    "end": "2026-09-30",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-21T19:20:15.493727",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:20:16.944151"
+  },
+  {
+    "id": "sch_867631ba",
+    "campaignId": "camp_c71d2fe2",
+    "slotId": "home_hero_16",
+    "start": "2026-09-21",
+    "end": "2026-09-30",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-21T19:21:22.006836",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:21:32.818195"
+  },
+  {
+    "id": "sch_0776d57d",
+    "campaignId": "camp_1292ba6e",
+    "slotId": "home_hero_14",
+    "start": "2026-09-21",
+    "end": "2026-10-31",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-21T19:21:29.603579",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-21T19:21:31.618144"
   }
 ]

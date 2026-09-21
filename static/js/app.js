@@ -1,5 +1,13 @@
 /* 온사이트 배너 스케줄 관리 - 메인 JavaScript */
 
+// 모바일 사이드바 토글
+function toggleSidebar() {
+  const sidebar = document.getElementById('campaignPanel');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+
 // 상태 관리
 const state = {
   campaigns: [],
