@@ -10,6 +10,9 @@ from flask import Flask, jsonify, render_template, request, send_file, session, 
 
 from flask_socketio import SocketIO, emit
 
+# Supabase 연동
+from supabase import create_client, Client
+
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 LOG_DIR = BASE_DIR / "logs"
@@ -18,6 +21,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "schedule-editor-secret-2026"
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# Supabase 설정
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://kuwpkmwediyalssgzqcx.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "sb_publishable_E3gIfkHqq9q5_Q8gUqLCBA_UjdGSMkR")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 # 접속 중인 사용자 추적
 connected_users = {}
 
@@ -25,7 +33,7 @@ connected_users = {}
 ADMIN_PASSWORD = "choyy@hsad.co.kr"
 
 
-# ---- 데이터 파일 읽기/쓰기 ----
+# ---- 데이터 파일 읽기/쓰기 (slots만 로컬 JSON 유지) ----
 
 def read_json(filename):
     path = DATA_DIR / filename
@@ -37,48 +45,170 @@ def read_json(filename):
         return []
 
 
-def write_json(filename, data):
-    path = DATA_DIR / filename
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
-def get_campaigns():
-    return read_json("campaigns.json")
-
-
 def get_slots():
     return read_json("slots.json")
 
 
+# ---- Supabase 데이터 함수 ----
+
+def get_campaigns():
+    try:
+        res = supabase.table("campaigns").select("*").execute()
+        campaigns = []
+        for row in res.data:
+            campaigns.append({
+                "id": row["id"],
+                "name": row["name"],
+                "type": row["type"],
+                "category": row["category"],
+                "jira": row["jira"],
+                "eventNo": row["event_no"],
+                "period": {
+                    "start": row["period_start"],
+                    "end": row["period_end"]
+                },
+                "memo": row["memo"],
+                "color": row["color"]
+            })
+        return campaigns
+    except Exception as e:
+        print(f"DB Error (get_campaigns): {e}")
+        return []
+
+
+def save_campaign(campaign):
+    try:
+        supabase.table("campaigns").upsert({
+            "id": campaign["id"],
+            "name": campaign.get("name"),
+            "type": campaign.get("type"),
+            "category": campaign.get("category"),
+            "jira": campaign.get("jira"),
+            "event_no": campaign.get("eventNo"),
+            "period_start": campaign.get("period", {}).get("start"),
+            "period_end": campaign.get("period", {}).get("end"),
+            "memo": campaign.get("memo"),
+            "color": campaign.get("color")
+        }).execute()
+    except Exception as e:
+        print(f"DB Error (save_campaign): {e}")
+
+
+def delete_campaign_db(campaign_id):
+    try:
+        supabase.table("campaigns").delete().eq("id", campaign_id).execute()
+    except Exception as e:
+        print(f"DB Error (delete_campaign): {e}")
+
+
 def get_schedule():
-    return read_json("schedule.json")
+    try:
+        res = supabase.table("schedule").select("*").execute()
+        schedule = []
+        for row in res.data:
+            schedule.append({
+                "id": row["id"],
+                "campaignId": row["campaign_id"],
+                "slotId": row["slot_id"],
+                "start": row["start_date"],
+                "end": row["end_date"]
+            })
+        return schedule
+    except Exception as e:
+        print(f"DB Error (get_schedule): {e}")
+        return []
 
 
-def save_campaigns(data):
-    write_json("campaigns.json", data)
+def save_schedule_item(item):
+    try:
+        supabase.table("schedule").upsert({
+            "id": item["id"],
+            "campaign_id": item.get("campaignId"),
+            "slot_id": item.get("slotId"),
+            "start_date": item.get("start"),
+            "end_date": item.get("end")
+        }).execute()
+    except Exception as e:
+        print(f"DB Error (save_schedule_item): {e}")
 
 
-def save_schedule(data):
-    write_json("schedule.json", data)
+def delete_schedule_item(item_id):
+    try:
+        supabase.table("schedule").delete().eq("id", item_id).execute()
+    except Exception as e:
+        print(f"DB Error (delete_schedule_item): {e}")
 
 
 def get_memos():
-    return read_json("memos.json")
+    try:
+        res = supabase.table("memos").select("*").execute()
+        memos = []
+        for row in res.data:
+            memos.append({
+                "id": row["id"],
+                "content": row["content"],
+                "createdBy": row["created_by"],
+                "createdByCode": row["created_by_code"],
+                "createdAt": row["created_at"],
+                "confirmed": row["confirmed"],
+                "confirmedBy": row["confirmed_by"],
+                "confirmedAt": row["confirmed_at"]
+            })
+        return memos
+    except Exception as e:
+        print(f"DB Error (get_memos): {e}")
+        return []
 
 
-def save_memos(data):
-    write_json("memos.json", data)
+def save_memo(memo):
+    try:
+        supabase.table("memos").upsert({
+            "id": memo["id"],
+            "content": memo.get("content"),
+            "created_by": memo.get("createdBy"),
+            "created_by_code": memo.get("createdByCode"),
+            "created_at": memo.get("createdAt"),
+            "confirmed": memo.get("confirmed", False),
+            "confirmed_by": memo.get("confirmedBy"),
+            "confirmed_at": memo.get("confirmedAt")
+        }).execute()
+    except Exception as e:
+        print(f"DB Error (save_memo): {e}")
 
 
-# ---- 접근 코드 관리 ----
+def delete_memo_db(memo_id):
+    try:
+        supabase.table("memos").delete().eq("id", memo_id).execute()
+    except Exception as e:
+        print(f"DB Error (delete_memo): {e}")
+
+
+# ---- 접근 코드 관리 (Supabase) ----
 
 def get_access_codes():
-    return read_json("access_codes.json")
+    try:
+        res = supabase.table("access_codes").select("*").execute()
+        codes = []
+        for row in res.data:
+            codes.append({
+                "code": row["code"],
+                "nickname": row["nickname"],
+                "active": True
+            })
+        return codes
+    except Exception as e:
+        print(f"DB Error (get_access_codes): {e}")
+        return []
 
 
-def save_access_codes(data):
-    write_json("access_codes.json", data)
+def save_access_code(code_data):
+    try:
+        supabase.table("access_codes").upsert({
+            "code": code_data["code"],
+            "nickname": code_data.get("nickname")
+        }).execute()
+    except Exception as e:
+        print(f"DB Error (save_access_code): {e}")
 
 
 def generate_next_code(prefix="HSAD"):
@@ -99,7 +229,7 @@ def generate_next_code(prefix="HSAD"):
 def is_valid_code(code):
     """발급된 코드인지 확인"""
     codes = get_access_codes()
-    return any(c["code"] == code and c["active"] for c in codes)
+    return any(c["code"] == code for c in codes)
 
 
 def log_access(code, action, details=""):
@@ -155,12 +285,7 @@ def api_set_nickname():
     if not nickname or len(nickname) > 5:
         return jsonify({"ok": False, "error": "닉네임은 1~5자로 입력해주세요."}), 400
 
-    codes = get_access_codes()
-    for c in codes:
-        if c["code"] == code:
-            c["nickname"] = nickname
-            break
-    save_access_codes(codes)
+    save_access_code({"code": code, "nickname": nickname})
     log_access(code, "NICKNAME_SET", nickname)
 
     return jsonify({"ok": True, "redirect": "/app"})
@@ -225,14 +350,7 @@ def api_auth_issue():
     if not new_code:
         return jsonify({"ok": False, "error": f"발급 가능한 {prefix} 코드가 없습니다. (최대 999개)"}), 400
 
-    codes = get_access_codes()
-    codes.append({
-        "code": new_code,
-        "active": True,
-        "nickname": None,
-        "issuedAt": datetime.now().isoformat(),
-    })
-    save_access_codes(codes)
+    save_access_code({"code": new_code, "nickname": None})
     log_access(new_code, "ISSUED", f"by admin ({prefix})")
 
     return jsonify({"ok": True, "code": new_code})
@@ -262,18 +380,18 @@ def api_campaigns_list():
 @app.route("/api/campaigns", methods=["POST"])
 def api_campaigns_create():
     data = request.get_json()
-    campaigns = get_campaigns()
     new_campaign = {
         "id": f"camp_{uuid.uuid4().hex[:8]}",
         "name": data.get("name", ""),
         "type": data.get("type", ""),
         "category": data.get("category", ""),
         "jira": data.get("jira", ""),
+        "eventNo": data.get("eventNo", ""),
         "period": data.get("period", {"start": "", "end": ""}),
         "memo": data.get("memo", ""),
     }
-    campaigns.append(new_campaign)
-    save_campaigns(campaigns)
+    save_campaign(new_campaign)
+    campaigns = get_campaigns()
     socketio.emit("campaigns:update", {"campaigns": campaigns})
     return jsonify(new_campaign), 201
 
@@ -281,20 +399,26 @@ def api_campaigns_create():
 @app.route("/api/campaigns/<campaign_id>", methods=["PUT"])
 def api_campaigns_update(campaign_id):
     data = request.get_json()
+    updated_campaign = {
+        "id": campaign_id,
+        "name": data.get("name", ""),
+        "type": data.get("type", ""),
+        "category": data.get("category", ""),
+        "jira": data.get("jira", ""),
+        "eventNo": data.get("eventNo", ""),
+        "period": data.get("period", {"start": "", "end": ""}),
+        "memo": data.get("memo", ""),
+    }
+    save_campaign(updated_campaign)
     campaigns = get_campaigns()
-    for c in campaigns:
-        if c["id"] == campaign_id:
-            c.update({k: v for k, v in data.items() if k != "id"})
-            break
-    save_campaigns(campaigns)
     socketio.emit("campaigns:update", {"campaigns": campaigns})
     return jsonify({"ok": True})
 
 
 @app.route("/api/campaigns/<campaign_id>", methods=["DELETE"])
 def api_campaigns_delete(campaign_id):
-    campaigns = [c for c in get_campaigns() if c["id"] != campaign_id]
-    save_campaigns(campaigns)
+    delete_campaign_db(campaign_id)
+    campaigns = get_campaigns()
     socketio.emit("campaigns:update", {"campaigns": campaigns})
     return jsonify({"ok": True})
 
@@ -307,7 +431,6 @@ def api_schedule_list():
 @app.route("/api/schedule", methods=["POST"])
 def api_schedule_create():
     data = request.get_json()
-    schedule = get_schedule()
     code = session.get("access_code", "unknown")
     new_item = {
         "id": f"sch_{uuid.uuid4().hex[:8]}",
@@ -315,14 +438,10 @@ def api_schedule_create():
         "slotId": data.get("slotId"),
         "start": data.get("start"),
         "end": data.get("end"),
-        "order": data.get("order", 1),
-        "modified": True,  # 새로 추가된 항목은 수정됨 표시
-        "modifiedBy": code,
-        "modifiedAt": datetime.now().isoformat(),
     }
-    schedule.append(new_item)
-    save_schedule(schedule)
+    save_schedule_item(new_item)
     log_access(code, "SCHEDULE_CREATE", f"id={new_item['id']}")
+    schedule = get_schedule()
     socketio.emit("schedule:update", {"schedule": schedule})
     return jsonify(new_item), 201
 
@@ -330,19 +449,17 @@ def api_schedule_create():
 @app.route("/api/schedule/<item_id>", methods=["PUT"])
 def api_schedule_update(item_id):
     data = request.get_json()
-    schedule = get_schedule()
     code = session.get("access_code", "unknown")
-    for s in schedule:
-        if s["id"] == item_id:
-            s.update({k: v for k, v in data.items() if k != "id"})
-            # modified 플래그를 명시적으로 false로 보내지 않는 한 true로 설정
-            if "modified" not in data:
-                s["modified"] = True
-                s["modifiedBy"] = code
-                s["modifiedAt"] = datetime.now().isoformat()
-            break
-    save_schedule(schedule)
+    updated_item = {
+        "id": item_id,
+        "campaignId": data.get("campaignId"),
+        "slotId": data.get("slotId"),
+        "start": data.get("start"),
+        "end": data.get("end"),
+    }
+    save_schedule_item(updated_item)
     log_access(code, "SCHEDULE_UPDATE", f"id={item_id}")
+    schedule = get_schedule()
     socketio.emit("schedule:update", {"schedule": schedule})
     return jsonify({"ok": True})
 
@@ -350,26 +467,19 @@ def api_schedule_update(item_id):
 @app.route("/api/schedule/<item_id>", methods=["DELETE"])
 def api_schedule_delete(item_id):
     code = session.get("access_code", "unknown")
-    schedule = [s for s in get_schedule() if s["id"] != item_id]
-    save_schedule(schedule)
+    delete_schedule_item(item_id)
     log_access(code, "SCHEDULE_DELETE", f"id={item_id}")
+    schedule = get_schedule()
     socketio.emit("schedule:update", {"schedule": schedule})
     return jsonify({"ok": True})
 
 
 @app.route("/api/schedule/<item_id>/confirm", methods=["POST"])
 def api_schedule_confirm(item_id):
-    """수정 확인 - modified 플래그 제거"""
-    schedule = get_schedule()
+    """수정 확인"""
     code = session.get("access_code", "unknown")
-    for s in schedule:
-        if s["id"] == item_id:
-            s["modified"] = False
-            s["confirmedBy"] = code
-            s["confirmedAt"] = datetime.now().isoformat()
-            break
-    save_schedule(schedule)
     log_access(code, "SCHEDULE_CONFIRM", f"id={item_id}")
+    schedule = get_schedule()
     socketio.emit("schedule:update", {"schedule": schedule})
     return jsonify({"ok": True})
 
@@ -401,9 +511,9 @@ def api_memos_create():
         "confirmedBy": None,
         "confirmedAt": None,
     }
-    memos.append(memo)
-    save_memos(memos)
+    save_memo(memo)
     log_access(code, "MEMO_CREATE", f"id={memo['id']}")
+    memos = get_memos()
     socketio.emit("memos:update", {"memos": memos})
     return jsonify(memo), 201
 
@@ -411,22 +521,22 @@ def api_memos_create():
 @app.route("/api/memos/<memo_id>", methods=["PUT"])
 def api_memos_update(memo_id):
     """메모 수정"""
-    memos = get_memos()
     data = request.json
     code = session.get("access_code", "unknown")
     display_name = get_display_name(code)
-    for m in memos:
-        if m["id"] == memo_id:
-            m["content"] = data.get("content", m["content"])
-            m["createdByCode"] = code
-            m["createdBy"] = display_name
-            m["createdAt"] = datetime.now().isoformat()
-            m["confirmed"] = False
-            m["confirmedBy"] = None
-            m["confirmedAt"] = None
-            break
-    save_memos(memos)
+    updated_memo = {
+        "id": memo_id,
+        "content": data.get("content", ""),
+        "createdByCode": code,
+        "createdBy": display_name,
+        "createdAt": datetime.now().isoformat(),
+        "confirmed": False,
+        "confirmedBy": None,
+        "confirmedAt": None,
+    }
+    save_memo(updated_memo)
     log_access(code, "MEMO_UPDATE", f"id={memo_id}")
+    memos = get_memos()
     socketio.emit("memos:update", {"memos": memos})
     return jsonify({"ok": True})
 
@@ -434,11 +544,10 @@ def api_memos_update(memo_id):
 @app.route("/api/memos/<memo_id>", methods=["DELETE"])
 def api_memos_delete(memo_id):
     """메모 삭제"""
-    memos = get_memos()
     code = session.get("access_code", "unknown")
-    memos = [m for m in memos if m["id"] != memo_id]
-    save_memos(memos)
+    delete_memo_db(memo_id)
     log_access(code, "MEMO_DELETE", f"id={memo_id}")
+    memos = get_memos()
     socketio.emit("memos:update", {"memos": memos})
     return jsonify({"ok": True})
 
@@ -456,9 +565,10 @@ def api_memos_confirm(memo_id):
             m["confirmed"] = True
             m["confirmedBy"] = display_name
             m["confirmedAt"] = datetime.now().isoformat()
+            save_memo(m)
             break
-    save_memos(memos)
     log_access(code, "MEMO_CONFIRM", f"id={memo_id}")
+    memos = get_memos()
     socketio.emit("memos:update", {"memos": memos})
     return jsonify({"ok": True})
 
@@ -533,15 +643,14 @@ def api_upload_confirm():
     """미리보기한 기획전들을 실제로 저장"""
     data = request.get_json()
     new_campaigns = data.get("campaigns", [])
-    campaigns = get_campaigns()
 
     added = 0
     for c in new_campaigns:
         c["id"] = f"camp_{uuid.uuid4().hex[:8]}"
-        campaigns.append(c)
+        save_campaign(c)
         added += 1
 
-    save_campaigns(campaigns)
+    campaigns = get_campaigns()
     socketio.emit("campaigns:update", {"campaigns": campaigns})
     return jsonify({"added": added})
 
