@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온사이트 배너 스케줄 관리</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/grid.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 헤더 -->
+    <header class="global-header">
+      <div class="header-left">
+        <h1 class="header-title">온사이트 배너 스케줄 관리</h1>
+      </div>
+      <div class="header-right">
+        <div class="users-online" id="usersOnline">
+          <span class="users-dot"></span>
+          <span class="users-count">0명 접속 중</span>
+        </div>
+        <button type="button" class="btn-icon" id="themeToggle" title="테마 전환">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <!-- 좌측: 기획전 패널 -->
+      <aside class="sidebar" id="campaignPanel">
+        <div class="sidebar-header">
+          <h2>기획전 목록</h2>
+          <div class="sidebar-header-actions">
+            <button type="button" class="btn-sm btn-primary" id="addCampaignBtn">+ 추가</button>
+            <button type="button" class="btn-sm btn-outline" id="uploadExcelBtn">+ 엑셀</button>
+          </div>
+        </div>
+        <div class="sidebar-search">
+          <input type="text" id="campaignSearch" placeholder="검색..." class="search-input">
+        </div>
+        <div class="campaign-list" id="campaignList">
+          <!-- 기획전 항목들이 여기에 렌더링됨 -->
+        </div>
+      </aside>
+
+      <!-- 메인: 스케줄 그리드 -->
+      <main class="main-content">
+        <!-- 영역 탭 -->
+        <div class="area-tabs">
+          <button type="button" class="area-tab active" data-area="홈메인">홈메인</button>
+          <button type="button" class="area-tab" data-area="PDP공지사항">PDP공지사항</button>
+          <button type="button" class="area-tab" data-area="구독">구독</button>
+        </div>
+
+        <!-- 툴바 -->
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button type="button" class="btn-sm btn-outline" id="prevMonthBtn">← 이전달</button>
+            <button type="button" class="btn-sm btn-outline" id="todayBtn">이번달</button>
+            <button type="button" class="btn-sm btn-outline" id="nextMonthBtn">다음달 →</button>
+            <span class="toolbar-date" id="currentMonth">2026년 9월</span>
+          </div>
+          <div class="toolbar-right">
+            <button type="button" class="btn-sm btn-outline" id="memoBtn">메모</button>
+            <button type="button" class="btn-sm btn-outline" id="exportBtn">엑셀 다운로드</button>
+          </div>
+        </div>
+
+        <!-- 캘린더 컨테이너 -->
+        <div class="calendar-container" id="calendarContainer">
+          <!-- 월별 캘린더가 여기에 렌더링됨 -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 기획전 추가/수정 모달 -->
+  <div class="modal-overlay" id="campaignModal" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">기획전 추가</h3>
+        <button type="button" class="btn-close" id="modalClose">&times;</button>
+      </div>
+      <form id="campaignForm" class="modal-body">
+        <div class="form-group">
+          <label for="campName">기획전명 <span class="required">*</span></label>
+          <input type="text" id="campName" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="campType">유형 <span class="required">*</span></label>
+            <select id="campType" required>
+              <option value="">선택</option>
+              <option value="통합">통합</option>
+              <option value="전략런칭">전략런칭</option>
+              <option value="일반">일반</option>
+              <option value="구독">구독</option>
+              <option value="임직원">임직원</option>
+              <option value="제휴">제휴</option>
+              <option value="라이브">라이브</option>
+              <option value="이벤트">이벤트</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="campCategory">구분 <span class="required">*</span></label>
+            <select id="campCategory" required>
+              <option value="">선택</option>
+              <option value="신규">신규</option>
+              <option value="연장">연장</option>
+              <option value="파생">파생</option>
+              <option value="리뉴얼">리뉴얼</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="campJira">JIRA</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">ONMKT-</span>
+            <input type="text" id="campJira" placeholder="1530">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="campEventNo">기획전번호</label>
+          <input type="text" id="campEventNo" placeholder="ex) promotions/brandweek">
+          <small class="form-hint" id="eventLink" style="display:none">
+            <a href="#" target="_blank" id="eventLinkAnchor"></a>
+          </small>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="campStart">시작일 <span class="required">*</span></label>
+            <input type="date" id="campStart" required>
+          </div>
+          <div class="form-group">
+            <label for="campEnd">종료일 <span class="required">*</span></label>
+            <input type="date" id="campEnd" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="campMemo">참고사항 <small>(최대 200자)</small></label>
+          <textarea id="campMemo" rows="2" maxlength="200"></textarea>
+          <small class="form-hint"><span id="memoCount">0</span>/200</small>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" id="modalCancel">취소</button>
+        <button type="submit" form="campaignForm" class="btn-primary" id="modalSave">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 노출 기간 설정 모달 -->
+  <div class="modal-overlay" id="scheduleModal" style="display:none">
+    <div class="modal modal-schedule">
+      <div class="modal-header">
+        <h3>노출 기간 설정</h3>
+        <button type="button" class="btn-close" onclick="closeScheduleModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="sched-info">
+          <div class="sched-campaign">
+            <div class="sched-color" id="schedCampColor"></div>
+            <div>
+              <div class="sched-name" id="schedCampName"></div>
+              <div class="sched-meta" id="schedCampPeriod"></div>
+            </div>
+          </div>
+          <div class="sched-slot" id="schedSlotName"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="schedStart">노출 시작일 <span class="required">*</span></label>
+            <input type="date" id="schedStart" required>
+          </div>
+          <div class="form-group">
+            <label for="schedEnd">노출 종료일 <span class="required">*</span></label>
+            <input type="date" id="schedEnd" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeScheduleModal()">취소</button>
+        <button type="button" class="btn-primary" onclick="confirmSchedule()">배치</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스케줄 상세 보기 모달 -->
+  <div class="modal-overlay" id="detailModal" style="display:none">
+    <div class="modal modal-detail">
+      <div class="modal-header">
+        <h3>기획전 상세</h3>
+        <button type="button" class="btn-close" onclick="closeDetailModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-header">
+          <div class="detail-color" id="detailColor"></div>
+          <div class="detail-name" id="detailName"></div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-row">
+            <span class="detail-label">유형</span>
+            <span class="detail-value" id="detailType"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">구분</span>
+            <span class="detail-value" id="detailCategory"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">JIRA</span>
+            <span class="detail-value" id="detailJira"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">기획전번호</span>
+            <span class="detail-value" id="detailEventNo"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">기획전 기간</span>
+            <span class="detail-value" id="detailPeriod"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">배치 구좌</span>
+            <span class="detail-value" id="detailSlot"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">노출 기간</span>
+            <span class="detail-value detail-sched-inputs">
+              <input type="date" id="detailSchedStart"> ~ <input type="date" id="detailSchedEnd">
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">참고사항</span>
+            <span class="detail-value" id="detailMemo"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-confirm" id="detailConfirmBtn" onclick="confirmScheduleModification()" style="display:none">수정 확인</button>
+        <button type="button" class="btn-outline" onclick="closeDetailModal()">닫기</button>
+        <button type="button" class="btn-primary" onclick="updateSchedulePeriod()">노출 기간 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 엑셀 업로드 모달 -->
+  <div class="modal-overlay" id="excelModal" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>엑셀 업로드</h3>
+        <button type="button" class="btn-close" onclick="closeExcelModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">📁</div>
+          <p>엑셀 파일을 드래그하거나 클릭하여 선택</p>
+          <small>.xlsx, .xls 파일 지원</small>
+          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none">
+        </div>
+        <div class="upload-preview" id="uploadPreview" style="display:none">
+          <p><strong id="uploadFileName"></strong></p>
+          <p id="uploadRowCount"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeExcelModal()">취소</button>
+        <button type="button" class="btn-outline" onclick="downloadTemplate()">양식 다운로드</button>
+        <button type="button" class="btn-primary" id="uploadConfirmBtn" onclick="confirmExcelUpload()" disabled>업로드</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메모 모달 -->
+  <div class="modal-overlay" id="memoModal" style="display:none">
+    <div class="modal" style="max-width:500px">
+      <div class="modal-header">
+        <h3>전체 메모</h3>
+        <button type="button" class="btn-close" onclick="closeMemoModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="memoList" class="memo-list">
+          <!-- 메모들이 여기에 렌더링됨 -->
+        </div>
+        <div id="memoAddSection" class="memo-add-section">
+          <textarea id="newMemoContent" placeholder="새 메모 입력 (최대 3개)" rows="2"></textarea>
+          <button type="button" class="btn-sm btn-primary" onclick="addMemo()">추가</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeMemoModal()">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온사이트 배너 스케줄 관리 - 접근</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --danger: #ef4444;
+      --radius: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #94a3b8;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--primary);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .issued-code {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f0f9ff;
+      border: 2px dashed var(--primary);
+      border-radius: var(--radius);
+    }
+
+    .issued-code-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .issued-code-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 2px;
+    }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h1 class="login-title">온사이트 배너 스케줄 관리</h1>
+      <p class="login-subtitle">접근 코드를 입력하거나 발급받으세요</p>
+
+      <div class="tab-buttons">
+        <button type="button" class="tab-btn active" data-tab="login">접근 코드 입력</button>
+        <button type="button" class="tab-btn" data-tab="issue">접근 코드 발급</button>
+      </div>
+
+      <!-- 접근 코드 입력 탭 -->
+      <div class="tab-content active" id="tab-login">
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="accessCode">접근 코드</label>
+            <input type="text" id="accessCode" placeholder="HSAD001" autocomplete="off">
+          </div>
+          <button type="submit" class="btn-submit">접속하기</button>
+        </form>
+        <div id="loginMessage"></div>
+      </div>
+
+      <!-- 접근 코드 발급 탭 -->
+      <div class="tab-content" id="tab-issue">
+        <form id="issueForm">
+          <div class="form-group">
+            <label for="adminPassword">관리자 패스워드</label>
+            <input type="password" id="adminPassword" placeholder="패스워드를 입력하세요">
+          </div>
+          <button type="submit" class="btn-submit">코드 발급받기</button>
+        </form>
+        <div id="issueMessage"></div>
+        <div id="issuedCodeBox" style="display:none">
+          <div class="issued-code">
+            <div class="issued-code-label">발급된 접근 코드</div>
+            <div class="issued-code-value" id="issuedCodeValue"></div>
+          </div>
+          <p class="hint">이 코드를 기억해두세요. 다음 접속 시 필요합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 탭 전환
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // 접근 코드 입력 폼
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('accessCode').value.trim();
+      const msgEl = document.getElementById('loginMessage');
+
+      if (!code) {
+        msgEl.innerHTML = '<div class="message error">접근 코드를 입력해주세요.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          msgEl.innerHTML = '<div class="message success">접속 성공! 이동 중...</div>';
+          setTimeout(() => {
+            window.location.href = data.redirect;
+          }, 500);
+        } else {
+          msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
+        }
+      } catch (e) {
+        msgEl.innerHTML = '<div class="message error">서버 오류가 발생했습니다.</div>';
+      }
+    });
+
+    // 접근 코드 발급 폼
+    document.getElementById('issueForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('adminPassword').value;
+      const msgEl = document.getElementById('issueMessage');
+      const codeBox = document.getElementById('issuedCodeBox');
+
+      if (!password) {
+        msgEl.innerHTML = '<div class="message error">패스워드를 입력해주세요.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/issue', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          msgEl.innerHTML = '<div class="message success">코드가 발급되었습니다!</div>';
+          document.getElementById('issuedCodeValue').textContent = data.code;
+          codeBox.style.display = 'block';
+          document.getElementById('adminPassword').value = '';
+        } else {
+          msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
+          codeBox.style.display = 'none';
+        }
+      } catch (e) {
+        msgEl.innerHTML = '<div class="message error">서버 오류가 발생했습니다.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

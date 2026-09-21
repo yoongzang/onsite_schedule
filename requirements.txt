@@ -1,0 +1,6 @@
+flask
+flask-socketio
+openpyxl
+gunicorn
+gevent
+gevent-websocket

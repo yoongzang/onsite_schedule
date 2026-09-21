@@ -1,0 +1,573 @@
+/* 스케줄 그리드 스타일 */
+
+/* 영역 탭 */
+.area-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.area-tab {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.area-tab:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.area-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* 캘린더 컨테이너 */
+.calendar-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--bg);
+}
+
+/* 테이블 스크롤 래퍼 */
+.calendar-scroll-wrapper {
+  overflow-x: auto;
+}
+
+.calendar-table {
+  width: max-content;
+}
+
+.calendar-table thead th:not(.th-group):not(.th-order) {
+  min-width: 70px;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar {
+  height: 10px;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 5px;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* 구좌 그룹 */
+.slot-group {
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.slot-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.slot-group-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.slot-group-count {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 2px 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+}
+
+.slot-group-toggle {
+  transition: transform 0.2s;
+}
+
+.slot-group.collapsed .slot-group-toggle {
+  transform: rotate(-90deg);
+}
+
+.slot-group.collapsed .slot-group-body {
+  display: none;
+}
+
+/* 월별 캘린더 테이블 */
+.calendar-table {
+  border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+  border: 1px solid var(--border);
+  text-align: center;
+  vertical-align: top;
+  font-size: 12px;
+}
+
+.calendar-table th {
+  padding: 8px 4px;
+  background: var(--surface);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.calendar-table th.sun,
+.calendar-table th.sat,
+.calendar-table th.holiday { color: var(--danger); }
+
+.calendar-table td.sun .calendar-day-num,
+.calendar-table td.sat .calendar-day-num,
+.calendar-table td.holiday .calendar-day-num { color: var(--danger); }
+
+/* 구좌명/순서 헤더 */
+.calendar-table .th-group {
+  width: 100px;
+  min-width: 100px;
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--surface);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.calendar-table .th-order {
+  width: 46px;
+  min-width: 46px;
+  background: var(--surface);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+/* 구좌 행 - 순서 열 */
+.calendar-slot-row .td-order {
+  width: 46px;
+  min-width: 46px;
+  padding: 8px;
+  text-align: center;
+  background: var(--surface);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  border-right: 2px solid var(--border);
+}
+
+/* 날짜 셀 */
+.calendar-cell {
+  height: 30px;
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+  padding: 2px;
+  position: relative;
+  background: var(--bg);
+  transition: background 0.1s;
+  overflow: hidden;
+}
+
+/* 테이블 셀 간 겹침 방지 */
+.calendar-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.calendar-cell.today {
+  background: var(--primary-glow);
+}
+
+.calendar-cell.weekend {
+  background: var(--surface-2);
+}
+
+.calendar-cell.other-month {
+  background: var(--surface);
+  opacity: 0.5;
+}
+
+.calendar-cell.drop-target {
+  background: rgba(37, 99, 235, 0.15);
+  outline: 2px dashed var(--primary);
+  outline-offset: -2px;
+}
+
+/* 날짜 숫자 */
+.calendar-day-num {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* 스케줄 바 (캘린더용) */
+.calendar-bar {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin: 1px;
+  padding: 2px 4px;
+  min-height: 22px;
+  max-width: calc(100% - 2px);
+  width: calc(100% - 2px);
+  box-sizing: border-box;
+  font-size: 9px;
+  font-weight: 500;
+  color: white;
+  border-radius: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.calendar-bar:hover {
+  opacity: 0.9;
+}
+
+.calendar-bar.start {
+  border-radius: 3px 0 0 3px;
+  margin-right: 0;
+}
+
+.calendar-bar.middle {
+  border-radius: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.calendar-bar.end {
+  border-radius: 0 3px 3px 0;
+  margin-left: 0;
+}
+
+.calendar-bar.single {
+  border-radius: 3px;
+}
+
+.calendar-bar.conflict {
+  outline: 2px solid var(--danger);
+  outline-offset: -1px;
+}
+
+.calendar-bar.modified {
+  border: 1px dashed #FD312E;
+  box-shadow: 0 0 0 1px #FD312E;
+}
+
+.calendar-bar.out-of-range {
+  font-weight: 700;
+}
+
+/* 그리드 헤더 (날짜) */
+.grid-header {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.grid-header-slot {
+  width: 150px;
+  min-width: 150px;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-right: 1px solid var(--border);
+}
+
+.grid-header-dates {
+  display: flex;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.grid-date-cell {
+  min-width: var(--cell-width, 80px);
+  padding: 8px 4px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.grid-date-cell.today {
+  background: var(--primary-glow);
+}
+
+.grid-date-cell.weekend {
+  background: var(--surface-2);
+}
+
+.grid-date-day {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.grid-date-weekday {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.grid-date-weekday.sun {
+  color: var(--danger);
+}
+
+.grid-date-weekday.sat {
+  color: var(--primary);
+}
+
+/* 그리드 바디 */
+.grid-body {
+  flex: 1;
+  overflow: auto;
+}
+
+/* 영역 그룹 */
+.grid-area-group {
+  border-bottom: 2px solid var(--border);
+}
+
+.grid-area-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--surface-2);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+
+.grid-area-header:hover {
+  background: var(--surface);
+}
+
+.grid-area-toggle {
+  margin-right: 8px;
+  transition: transform 0.2s;
+}
+
+.grid-area-group.collapsed .grid-area-toggle {
+  transform: rotate(-90deg);
+}
+
+.grid-area-group.collapsed .grid-area-rows {
+  display: none;
+}
+
+/* 구좌 행 */
+.grid-row {
+  display: flex;
+  min-height: 60px;
+  border-bottom: 1px solid var(--border);
+}
+
+.grid-row:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body.dark .grid-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.grid-slot-label {
+  width: 150px;
+  min-width: 150px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+}
+
+.grid-slot-cells {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow-x: auto;
+}
+
+/* 날짜 셀 */
+.grid-cell {
+  min-width: var(--cell-width, 80px);
+  height: 100%;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+
+.grid-cell.today {
+  background: var(--primary-glow);
+}
+
+.grid-cell.weekend {
+  background: var(--surface-2);
+}
+
+.grid-cell.drop-target {
+  background: rgba(37, 99, 235, 0.15);
+  outline: 2px dashed var(--primary);
+  outline-offset: -2px;
+}
+
+/* 스케줄 막대 */
+.schedule-bar {
+  position: absolute;
+  top: 8px;
+  height: calc(100% - 16px);
+  min-height: 40px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  cursor: grab;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.15s, transform 0.1s;
+  z-index: 1;
+}
+
+.schedule-bar:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.schedule-bar.dragging {
+  opacity: 0.7;
+  cursor: grabbing;
+  z-index: 100;
+}
+
+.schedule-bar.conflict {
+  outline: 3px solid var(--danger);
+  outline-offset: -1px;
+}
+
+.schedule-bar-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.schedule-bar-period {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+/* 리사이즈 핸들 */
+.schedule-bar-resize {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.schedule-bar-resize.left {
+  left: 0;
+}
+
+.schedule-bar-resize.right {
+  right: 0;
+}
+
+.schedule-bar-resize:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 빈 상태 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 14px;
+  max-width: 300px;
+}
+
+/* 스크롤바 */
+.grid-body::-webkit-scrollbar,
+.grid-header-dates::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.grid-body::-webkit-scrollbar-track,
+.grid-header-dates::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+.grid-body::-webkit-scrollbar-thumb,
+.grid-header-dates::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.grid-body::-webkit-scrollbar-thumb:hover,
+.grid-header-dates::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* 줌 레벨별 셀 너비 */
+.grid-container[data-zoom="day"] {
+  --cell-width: 80px;
+}
+
+.grid-container[data-zoom="hour"] {
+  --cell-width: 40px;
+}
+
+.grid-container[data-zoom="week"] {
+  --cell-width: 120px;
+}

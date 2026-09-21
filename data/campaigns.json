@@ -1,0 +1,75 @@
+[
+  {
+    "id": "camp_sample1",
+    "name": "가을 가전 대전",
+    "type": "통합",
+    "category": "신규",
+    "jira": "1530",
+    "period": {
+      "start": "2026-09-15",
+      "end": "2026-09-30"
+    },
+    "memo": "시즌 메인 행사",
+    "eventNo": "PE00897002"
+  },
+  {
+    "id": "camp_sample2",
+    "name": "TV 특가전",
+    "type": "전략런칭",
+    "category": "신규",
+    "jira": "1542",
+    "period": {
+      "start": "2026-09-18",
+      "end": "2026-09-25"
+    },
+    "memo": ""
+  },
+  {
+    "id": "camp_sample3",
+    "name": "냉장고 할인",
+    "type": "일반",
+    "category": "연장",
+    "jira": "1528",
+    "period": {
+      "start": "2026-09-20",
+      "end": "2026-09-28"
+    },
+    "memo": "협력사 공동 진행"
+  },
+  {
+    "id": "camp_8e92dd29",
+    "name": "냉장고",
+    "type": "임직원",
+    "category": "파생",
+    "jira": "1530",
+    "period": {
+      "start": "2026-09-08",
+      "end": "2026-09-09"
+    },
+    "memo": "ㄴㅇㄹ"
+  },
+  {
+    "id": "camp_2f7a6687",
+    "name": "주말구독특가 (9월21일주차)",
+    "type": "구독",
+    "category": "파생",
+    "jira": "",
+    "period": {
+      "start": "2026-09-25",
+      "end": "2026-09-28"
+    },
+    "memo": ""
+  },
+  {
+    "id": "camp_af3cbad0",
+    "name": "9.21 홈스타일",
+    "type": "라이브",
+    "category": "신규",
+    "jira": "",
+    "period": {
+      "start": "2026-09-21",
+      "end": "2026-09-22"
+    },
+    "memo": ""
+  }
+]

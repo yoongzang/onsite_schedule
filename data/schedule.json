@@ -1,0 +1,84 @@
+[
+  {
+    "id": "sch_sample1",
+    "campaignId": "camp_sample1",
+    "slotId": "slot_home_main",
+    "start": "2026-09-15",
+    "end": "2026-09-22",
+    "order": 1
+  },
+  {
+    "id": "sch_sample2",
+    "campaignId": "camp_sample2",
+    "slotId": "slot_cat_tv",
+    "start": "2026-09-18",
+    "end": "2026-09-25",
+    "order": 1
+  },
+  {
+    "id": "sch_13fe3101",
+    "campaignId": "camp_sample1",
+    "slotId": "home_hero_01",
+    "start": "2026-09-13",
+    "end": "2026-09-30",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-15T22:12:56.929825",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-15T22:12:58.778946"
+  },
+  {
+    "id": "sch_b2457a39",
+    "campaignId": "camp_sample3",
+    "slotId": "home_hero_03",
+    "start": "2026-09-19",
+    "end": "2026-09-29",
+    "order": 1,
+    "modified": true,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-15T21:42:34.107813"
+  },
+  {
+    "id": "sch_3aaa7896",
+    "campaignId": "camp_sample2",
+    "slotId": "home_hero_02",
+    "start": "2026-09-14",
+    "end": "2026-09-24",
+    "order": 1
+  },
+  {
+    "id": "sch_8e3b6fdf",
+    "campaignId": "camp_8e92dd29",
+    "slotId": "home_hero_04",
+    "start": "2026-09-17",
+    "end": "2026-09-17",
+    "order": 1
+  },
+  {
+    "id": "sch_bf658059",
+    "campaignId": "camp_2f7a6687",
+    "slotId": "home_hero_04",
+    "start": "2026-09-24",
+    "end": "2026-09-28",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-15T21:49:03.346073",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-15T21:55:02.245308"
+  },
+  {
+    "id": "sch_c7b5f33a",
+    "campaignId": "camp_af3cbad0",
+    "slotId": "home_hero_06",
+    "start": "2026-09-21",
+    "end": "2026-09-22",
+    "order": 1,
+    "modified": false,
+    "modifiedBy": "HSAD001",
+    "modifiedAt": "2026-09-15T21:54:43.160285",
+    "confirmedBy": "HSAD001",
+    "confirmedAt": "2026-09-15T21:54:59.893191"
+  }
+]
