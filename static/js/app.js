@@ -175,6 +175,29 @@ async function loadData() {
   }
 }
 
+// 저장 버튼 - 서버 데이터 동기화
+async function saveAllData() {
+  const btn = document.getElementById('saveBtn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ 저장 중...';
+  btn.disabled = true;
+
+  try {
+    await loadData();
+    btn.innerHTML = '✅ 저장 완료!';
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }, 1500);
+  } catch (e) {
+    btn.innerHTML = '❌ 실패';
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }, 1500);
+  }
+}
+
 // 이벤트 리스너
 function initEventListeners() {
   // 테마 토글
