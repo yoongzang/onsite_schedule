@@ -243,7 +243,10 @@
             <label for="adminPassword">관리자 패스워드</label>
             <input type="password" id="adminPassword" placeholder="패스워드를 입력하세요">
           </div>
-          <button type="submit" class="btn-submit">코드 발급받기</button>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="btn-submit" style="flex:1;">코드 발급받기</button>
+            <button type="button" class="btn-submit" style="flex:1;background:#64748b;" onclick="loadCodeList()">코드 목록</button>
+          </div>
         </form>
         <div id="issueMessage"></div>
         <div id="issuedCodeBox" style="display:none">
@@ -252,6 +255,10 @@
             <div class="issued-code-value" id="issuedCodeValue"></div>
           </div>
           <p class="hint">이 코드를 기억해두세요. 다음 접속 시 필요합니다.</p>
+        </div>
+        <div id="codeListBox" style="display:none;margin-top:20px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:12px;">발급된 코드 목록</div>
+          <div id="codeListContent" style="max-height:200px;overflow-y:auto;"></div>
         </div>
       </div>
     </div>
@@ -334,6 +341,92 @@
         msgEl.innerHTML = '<div class="message error">서버 오류가 발생했습니다.</div>';
       }
     });
+
+    // 코드 목록 조회
+    async function loadCodeList() {
+      const password = document.getElementById('adminPassword').value;
+      const msgEl = document.getElementById('issueMessage');
+      const listBox = document.getElementById('codeListBox');
+      const listContent = document.getElementById('codeListContent');
+
+      if (!password) {
+        msgEl.innerHTML = '<div class="message error">패스워드를 입력해주세요.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/codes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          msgEl.innerHTML = '';
+          if (data.codes.length === 0) {
+            listContent.innerHTML = '<div style="color:#64748b;text-align:center;padding:20px;">발급된 코드가 없습니다.</div>';
+          } else {
+            const hsadCodes = data.codes.filter(c => c.code.startsWith('HSAD')).sort((a,b) => a.code.localeCompare(b.code));
+            const lgCodes = data.codes.filter(c => c.code.startsWith('LG')).sort((a,b) => a.code.localeCompare(b.code));
+            let html = '';
+            if (hsadCodes.length > 0) {
+              html += '<div style="font-size:12px;color:#64748b;margin-bottom:4px;">HSAD (' + hsadCodes.length + ')</div>';
+              hsadCodes.forEach(c => {
+                html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8fafc;border-radius:6px;margin-bottom:4px;">
+                  <span style="font-family:monospace;">${c.code}</span>
+                  <span style="color:#64748b;font-size:12px;">${c.nickname || ''}</span>
+                  <button onclick="deleteCode('${c.code}')" style="background:#ef4444;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;">삭제</button>
+                </div>`;
+              });
+            }
+            if (lgCodes.length > 0) {
+              html += '<div style="font-size:12px;color:#64748b;margin:12px 0 4px;">LG (' + lgCodes.length + ')</div>';
+              lgCodes.forEach(c => {
+                html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8fafc;border-radius:6px;margin-bottom:4px;">
+                  <span style="font-family:monospace;">${c.code}</span>
+                  <span style="color:#64748b;font-size:12px;">${c.nickname || ''}</span>
+                  <button onclick="deleteCode('${c.code}')" style="background:#ef4444;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;">삭제</button>
+                </div>`;
+              });
+            }
+            listContent.innerHTML = html;
+          }
+          listBox.style.display = 'block';
+        } else {
+          msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
+          listBox.style.display = 'none';
+        }
+      } catch (e) {
+        msgEl.innerHTML = '<div class="message error">서버 오류가 발생했습니다.</div>';
+      }
+    }
+
+    // 코드 삭제
+    async function deleteCode(code) {
+      if (!confirm(`정말 "${code}" 코드를 삭제하시겠습니까?`)) return;
+
+      const password = document.getElementById('adminPassword').value;
+      const msgEl = document.getElementById('issueMessage');
+
+      try {
+        const res = await fetch(`/api/auth/codes/${code}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          msgEl.innerHTML = '<div class="message success">코드가 삭제되었습니다.</div>';
+          loadCodeList();
+        } else {
+          msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
+        }
+      } catch (e) {
+        msgEl.innerHTML = '<div class="message error">서버 오류가 발생했습니다.</div>';
+      }
+    }
   </script>
 </body>
 </html>

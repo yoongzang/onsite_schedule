@@ -224,18 +224,32 @@ def save_access_code(code_data):
 
 
 def generate_next_code(prefix="HSAD"):
-    """HSAD001~999 또는 LG001~999 순차 발급"""
+    """HSAD001~999 또는 LG001~999 랜덤 발급"""
+    import random
     codes = get_access_codes()
-    if not codes:
-        next_num = 1
-    else:
-        nums = [int(c["code"].replace(prefix, "")) for c in codes if c["code"].startswith(prefix)]
-        next_num = max(nums) + 1 if nums else 1
+    used_nums = set()
+    for c in codes:
+        if c["code"].startswith(prefix):
+            try:
+                num = int(c["code"].replace(prefix, ""))
+                used_nums.add(num)
+            except ValueError:
+                pass
 
-    if next_num > 999:
+    available = [n for n in range(1, 1000) if n not in used_nums]
+    if not available:
         return None  # 코드 소진
 
-    return f"{prefix}{next_num:03d}"
+    chosen = random.choice(available)
+    return f"{prefix}{chosen:03d}"
+
+
+def delete_access_code(code):
+    """접근 코드 삭제"""
+    try:
+        supabase.table("access_codes").delete().eq("code", code).execute()
+    except Exception as e:
+        print(f"DB Error (delete_access_code): {e}")
 
 
 def is_valid_code(code):
@@ -374,6 +388,33 @@ def api_auth_logout():
     code = session.get("access_code", "unknown")
     session.pop("access_code", None)
     log_access(code, "LOGOUT")
+    return jsonify({"ok": True})
+
+
+@app.route("/api/auth/codes", methods=["POST"])
+def api_auth_codes():
+    """발급된 코드 목록 조회 (관리자 전용)"""
+    data = request.get_json()
+    password = data.get("password", "")
+
+    if password != ADMIN_PASSWORD:
+        return jsonify({"ok": False, "error": "패스워드가 일치하지 않습니다."}), 401
+
+    codes = get_access_codes()
+    return jsonify({"ok": True, "codes": codes})
+
+
+@app.route("/api/auth/codes/<code>", methods=["DELETE"])
+def api_auth_delete_code(code):
+    """접근 코드 삭제 (관리자 전용)"""
+    data = request.get_json()
+    password = data.get("password", "")
+
+    if password != ADMIN_PASSWORD:
+        return jsonify({"ok": False, "error": "패스워드가 일치하지 않습니다."}), 401
+
+    delete_access_code(code)
+    log_access(code, "DELETED", "by admin")
     return jsonify({"ok": True})
 
 
